@@ -37,11 +37,20 @@ letter_freqs = {
 alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 def chi_squared(s):
+    freq = [0]*26
+    total = float(len(s))
+    for l in s:
+        freq[ord(l) - ord('A')] += 1
+    freq = [f / total for f in freq]
+    return sum((f - E)**2 / E for f, E in zip(freq, letter_freqs.values()))
+
+"""
+def chi_squared(s):
     sums = 0
     string_dict = {}
 
-    print("-----------")
-    print("original string: ", s)
+#    print("-----------")
+#    print("original string: ", s)
 
 
     # find frequency of letters in string
@@ -51,18 +60,21 @@ def chi_squared(s):
         else:
             string_dict[char] = 1
 
-    print("dictionary counts: ", string_dict)
+#    print("dictionary counts: ", string_dict)
 
     s_len = len(s)
 
     for letter in alphabet:
         if letter not in string_dict:
             string_dict[letter] = 0
-        sums += ((float((string_dict[letter]/s_len)) - float(letter_freqs[letter]))**2/float(letter_freqs[letter])) 
+        sums += (pow((string_dict[letter] / s_len) - letter_freqs[letter], 2)/float(letter_freqs[letter])) 
+        print("combination: ", letter, " , ", letter_freqs[letter], " , ", string_dict[letter])
+        print(s)
+        print(sums)
 
 #   print(sums)
     return sums
-
+"""
 
 def pop_var(s):
     """Calculate the population variance of letter frequencies in given string."""
@@ -110,32 +122,18 @@ def calc_likely_length(ciph_text, seq_len, min_length, max_length):
 
 def calc_key(key_len, cipher_text):
     # break cipher text into (k) lists such that every multiple of k belongs to a list
-    count = 0
-    lst = ['','','','','','','']
-    for char in cipher_text:
-        if(count >= 7):
-            count = 0
-        lst[count] += char
-        count += 1
+    key = ''
+    for i in range(key_len):
+        best_var = -1
+        best_char = ''
 
-#    print(lst)
-
-    # check population variance for each list, find likely corresponding characters?
-    # alphabet = string of all letters
-    best_var = [-1,-1,-1,-1,-1,-1,-1,]
-    best_char = ['','','','','','','']
-
-#   second_best_char = ['','','','','','','']
-#   third_best_char = ['','','','','','','']
-
-    for i, csr in enumerate(lst):
-#       print(csr)
         # i = index of the csr in lst
         # use i to index best_var and best_char
-        for num in range(26):
-            # num = offset
+        csr = "".join(cipher[i::key_len])
+
+        for num in range(26): 
             check_offset = ''
-            for j, char in enumerate(csr):
+            for char in csr:
                 char_num = alphabet.find(char)
                 # j = index of character in the csr string
                 # char = character in csr string
@@ -150,13 +148,11 @@ def calc_key(key_len, cipher_text):
             # run the test!          
             test_chi_squared = chi_squared(check_offset)
 
-            if test_chi_squared < best_var[i] or best_var[i] == -1:
-                best_var[i] = test_chi_squared
-                best_char[i] = alphabet[num]
+            if test_chi_squared < best_var or best_var == -1:
+                best_var = test_chi_squared
+                best_char = alphabet[num]
 
-    key = ''
-    for char in best_char:
-        key += char
+        key += best_char
 
     return key
 
