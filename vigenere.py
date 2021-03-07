@@ -36,6 +36,7 @@ letter_freqs = {
 
 alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
+"""
 def chi_squared(s):
     freq = [0]*26
     total = float(len(s))
@@ -43,8 +44,8 @@ def chi_squared(s):
         freq[ord(l) - ord('A')] += 1
     freq = [f / total for f in freq]
     return sum((f - E)**2 / E for f, E in zip(freq, letter_freqs.values()))
-
 """
+
 def chi_squared(s):
     sums = 0
     string_dict = {}
@@ -68,13 +69,13 @@ def chi_squared(s):
         if letter not in string_dict:
             string_dict[letter] = 0
         sums += (pow((string_dict[letter] / s_len) - letter_freqs[letter], 2)/float(letter_freqs[letter])) 
-        print("combination: ", letter, " , ", letter_freqs[letter], " , ", string_dict[letter])
-        print(s)
-        print(sums)
+#        print("combination: ", letter, " , ", letter_freqs[letter], " , ", string_dict[letter])
+#        print(s)
+#        print(sums)
 
 #   print(sums)
     return sums
-"""
+
 
 def pop_var(s):
     """Calculate the population variance of letter frequencies in given string."""
@@ -138,10 +139,10 @@ def calc_key(key_len, cipher_text):
                 # j = index of character in the csr string
                 # char = character in csr string
                 # offset char_num
-                char_num += num
+                char_num -= num
                 # if char_num exceeds 25, subtract 26 from it
-                if char_num > 25:
-                    char_num -= 26
+                if char_num < 0:
+                    char_num += 26
                 # new_char should be equal to alphabet indexed at char_num
                 check_offset += alphabet[char_num]
             # now we have a string check_offset that represents the caesar cipher with num offset
